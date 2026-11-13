@@ -1,0 +1,6 @@
+/pa/script.js               https://plausible.io/js/script.outbound-links.js   200
+/pa/event                   https://plausible.io/api/event                     200
+/things-to-know/            /before-you-go/            301
+/:lang/things-to-know/      /:lang/before-you-go/      301
+/model-malaga-cinema-base-plan-malaga-tickets*        /        410
+/:lang/model-malaga-cinema-base-plan-malaga-tickets*  /:lang/  410
