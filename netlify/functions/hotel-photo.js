@@ -13,7 +13,7 @@ function tileSVG() {
     + '<stop offset="0" stop-color="#0B5E8A"/><stop offset="1" stop-color="#0f2d3c"/></linearGradient></defs>'
     + '<rect width="800" height="520" fill="url(#g)"/>'
     + '<text x="400" y="272" text-anchor="middle" font-family="Anton,Arial,sans-serif" font-size="30" '
-    + 'letter-spacing="1" fill="#ffffff" opacity="0.82">MÁLAGA TOURS &amp; MORE</text></svg>';
+    + 'letter-spacing="1" fill="#ffffff" opacity="0.82">SEVILLE TOURS &amp; MORE</text></svg>';
 }
 function tile(status) {
   // Fallback tile must NOT stick in the CDN — otherwise a transient miss (or a bad key) caches a tile

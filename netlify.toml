@@ -1,0 +1,29 @@
+# Netlify config for sevilletoursandmore.com.
+# The site is pre-built static HTML (published as-is, no build step); the only server-side
+# code is the sponsor-portal functions in netlify/functions, bundled with esbuild so the
+# "stripe" dependency from package.json is included.
+[build]
+  publish = "."
+  command = ""
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/ad-portal"
+  to = "/.netlify/functions/mtm-ad-portal"
+  status = 200
+  force = true
+
+# Cache-Control for static assets (CWV / repeat-visit LCP). HTML is left on Netlify's default
+# (must-revalidate) so the daily-rebuilt tour pages never serve stale prices/availability.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

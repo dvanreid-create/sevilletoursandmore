@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sponsor a category · Seville Tours &amp; More</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root{--navy:#143A4E;--sea:#0B5E8A;--coral:#E8662A;--cream:#F5F2EB;--mut:#6b7782;--line:#e6e3db}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,Arial,sans-serif;color:var(--navy);background:var(--cream);line-height:1.5}
+  .wrap{max-width:620px;margin:0 auto;padding:34px 20px 60px}
+  .disp{font-family:Anton,sans-serif;font-weight:400;letter-spacing:.5px}
+  h1{font-family:Anton;font-weight:400;font-size:30px;color:var(--sea)}
+  h1 b{color:var(--coral);font-weight:400}
+  .lead{font-size:14.5px;color:#243b47;margin:8px 0 22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 20px 22px;box-shadow:0 1px 4px rgba(20,58,78,.06)}
+  label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin:14px 0 5px}
+  input,select,textarea{width:100%;font:inherit;font-size:14px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--navy)}
+  textarea{resize:vertical;min-height:56px}
+  .row{display:flex;gap:12px}.row>div{flex:1}
+  .price{font-size:13px;color:var(--mut);margin-top:5px}
+  .price b{color:var(--sea)}
+  button{margin-top:20px;width:100%;background:var(--coral);color:#fff;font-weight:700;font-size:15px;border:none;border-radius:10px;padding:13px;cursor:pointer}
+  button:disabled{opacity:.55;cursor:default}
+  .note{font-size:11.5px;color:var(--mut);margin-top:10px}
+  .msg{margin-top:14px;font-size:14px;padding:11px 13px;border-radius:9px;display:none}
+  .msg.ok{background:#EAF3DE;color:#3B6D11;display:block}
+  .msg.err{background:#FBE7DC;color:#993C1D;display:block}
+  a{color:var(--sea)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Sponsor a <b>category</b></h1>
+  <p class="lead">Put your brand at the top of a category on sevilletoursandmore.com — above the live listings travellers are booking, in all eight languages. Up to three sponsors share each category, rotating every 5 seconds.</p>
+
+  <div class="card">
+    <div id="okbox" class="msg"></div>
+    <form id="f">
+      <label>Category</label>
+      <select id="category" required></select>
+      <div class="price" id="price"></div>
+
+      <div class="row">
+        <div><label>Business name</label><input id="name" maxlength="60" required placeholder="e.g. Ronda Wine Tours"></div>
+        <div><label>Months</label><select id="months">
+          <option value="1">1 month</option><option value="2">2</option><option value="3">3</option>
+          <option value="6">6</option><option value="12">12</option></select></div>
+      </div>
+
+      <label>Tagline <span style="font-weight:400;color:var(--mut)">(one short line)</span></label>
+      <input id="tagline" maxlength="48" placeholder="e.g. Vineyard day trips from €39">
+
+      <label>Link (your website)</label>
+      <input id="link" type="url" required placeholder="https://…">
+
+      <label>Logo <span style="font-weight:400;color:var(--mut)">(PNG, JPG or SVG — optional)</span></label>
+      <input id="logo" type="file" accept="image/png,image/jpeg,image/svg+xml">
+
+      <label>Your email <span style="font-weight:400;color:var(--mut)">(for the receipt)</span></label>
+      <input id="email" type="email" placeholder="you@business.com">
+
+      <button id="go" type="submit">Continue to secure payment →</button>
+      <div class="note">Billed monthly per the term you choose. Payment is handled securely by Stripe. Slots are limited to 3 per category — if a category is full you'll be added to its waitlist.</div>
+    </form>
+  </div>
+</div>
+<script>
+var CATS=[
+ ["Boat Tour","Boat Tour","Premium",180],["City Tour","City Tour","Standard",120],
+ ["Day Trip","Day Trip","Premium",180],["Experience","Experience","Standard",120],
+ ["Walking Tour","Walking Tour","Standard",120],["cinema","Cinema","Entry",90],
+ ["family","Family & Parks","Standard",120],["food","Food & Drink","Premium",180],
+ ["games","Games & Mystery","Entry",90],["immersive","Immersive & Shows","Entry",90],
+ ["museums","Museums & Culture","Standard",120],["sports","Sports & Adventure","Standard",120],
+ ["wellness","Wellness & Spa","Premium",180],["workshops","Workshops & Classes","Entry",90]
+];
+var sel=document.getElementById('category');
+CATS.sort(function(a,b){return a[1]<b[1]?-1:1;}).forEach(function(c){
+  var o=document.createElement('option');o.value=c[0];o.textContent=c[1]+' — €'+c[3]+'/mo ('+c[2]+')';sel.appendChild(o);
+});
+function priceOf(v){var c=CATS.find(function(x){return x[0]===v;});return c?c[3]:0;}
+function upd(){var m=+document.getElementById('months').value,p=priceOf(sel.value);
+  document.getElementById('price').innerHTML='<b>€'+p+'</b> / month · '+m+' month'+(m>1?'s':'')+' = <b>€'+(p*m)+'</b> total';}
+sel.onchange=upd;document.getElementById('months').onchange=upd;upd();
+
+function fileToDataURL(file){return new Promise(function(res){if(!file)return res('');var r=new FileReader();r.onload=function(){res(r.result);};r.readAsDataURL(file);});}
+var q=new URLSearchParams(location.search),box=document.getElementById('okbox');
+if(q.get('ok')){box.className='msg ok';box.textContent='Payment received — thank you! Your sponsorship is being activated and will appear at the top of your category shortly.';}
+if(q.get('cancelled')){box.className='msg err';box.textContent='Checkout cancelled — nothing was charged. You can try again below.';}
+
+document.getElementById('f').addEventListener('submit',async function(e){
+  e.preventDefault();var btn=document.getElementById('go');btn.disabled=true;btn.textContent='Preparing checkout…';
+  try{
+    var logo=await fileToDataURL(document.getElementById('logo').files[0]);
+    var payload={category:sel.value,name:document.getElementById('name').value,tagline:document.getElementById('tagline').value,
+      link:document.getElementById('link').value,email:document.getElementById('email').value,
+      months:document.getElementById('months').value,logo:logo};
+    var r=await fetch('/.netlify/functions/mtm-create-ad-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    var d=await r.json();
+    if(d.url){location.href=d.url;return;}
+    if(d.waitlisted){box.className='msg ok';box.textContent='That category is currently full (3 sponsors). We’ve added you to the waitlist and will email you the moment a slot opens.';btn.disabled=false;btn.textContent='Continue to secure payment →';return;}
+    throw new Error(d.error||'error');
+  }catch(err){box.className='msg err';box.textContent='Something went wrong starting checkout. Please try again or email sofia@sevilletoursandmore.com.';btn.disabled=false;btn.textContent='Continue to secure payment →';}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "sevilletoursandmore-functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netlify functions for Seville T&M category sponsorships (Stripe + Airtable).",
+  "dependencies": {
+    "stripe": "^14.25.0"
+  }
+}
