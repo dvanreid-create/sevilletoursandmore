@@ -25,6 +25,13 @@ const CENTS = {
 };
 const CAP = parseInt(process.env.AD_CAP_PER_CATEGORY || "3", 10);
 const PENDING_RESERVE_MIN = 20;
+// Per-site admin alert via Resend on every submission. No-ops unless RESEND_API_KEY, RESEND_FROM and
+// ADMIN_NOTIFY_EMAIL are all set, so Seville (which already emails via its Airtable automation) is
+// unaffected until/unless those are set. AD_BRAND brands the Stripe line item + email per city.
+const RESEND = process.env.RESEND_API_KEY || "";
+const RFROM  = process.env.RESEND_FROM || "";
+const ADMIN  = process.env.ADMIN_NOTIFY_EMAIL || "";
+const BRAND  = process.env.AD_BRAND || "Seville Tours & More";
 
 // canonical category value (stored) -> { display, tier }. Value must match the site's data-cat.
 const CATS = {
@@ -48,6 +55,16 @@ const OK_TYPES = { "image/png":1, "image/jpeg":1, "image/jpg":1, "image/svg+xml"
 const json = (code, obj) => ({ statusCode: code, headers: { "Content-Type": "application/json" }, body: JSON.stringify(obj) });
 const t = (v) => (v == null ? "" : String(v).trim());
 const air = (path, token, opts) => fetch("https://api.airtable.com/v0/" + BASE + "/" + path, Object.assign({ headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" } }, opts || {}));
+
+// Fire-and-forget admin email via Resend. No-ops unless RESEND_API_KEY, RESEND_FROM and ADMIN_NOTIFY_EMAIL are set.
+async function notifyAdmin(subject, html) {
+  if (!RESEND || !RFROM || !ADMIN) return;
+  try {
+    await fetch("https://api.resend.com/emails", { method: "POST",
+      headers: { Authorization: "Bearer " + RESEND, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: RFROM, to: ADMIN, subject, html }) });
+  } catch (e) { console.error("notifyAdmin", e && e.message); }
+}
 
 async function countCategory(token, catValue) {
   const esc = catValue.replace(/'/g, "\\'");
@@ -93,6 +110,9 @@ exports.handler = async (event) => {
         "Category": catValue, "Tier": cat.tier, "Sponsor name": name, "Link URL": link,
         "Email": email, "Status": "Waitlist"
       }}) });
+      await notifyAdmin("New " + BRAND + " ad waitlist — " + cat.d,
+        "<p>A business joined the <strong>" + cat.d + "</strong> waitlist (category full).</p>" +
+        "<p>Name: " + name + "<br>Email: " + (email || "—") + "<br>Link: " + link + "</p>");
       return json(200, { waitlisted: true });
     }
 
@@ -118,6 +138,13 @@ exports.handler = async (event) => {
     if (!create.ok) throw new Error("airtable create " + create.status + " " + (await create.text()));
     const rec = await create.json();
 
+    // admin notification — fires the moment "Continue to secure payment" is clicked
+    await notifyAdmin("New " + BRAND + " ad submitted — " + name + " (" + cat.d + ")",
+      "<p>A new sponsorship was just submitted and is proceeding to payment.</p>" +
+      "<p>Sponsor: " + name + "<br>Category: " + cat.d + " (" + cat.tier + ")" +
+      "<br>Tagline: " + (tagline || "—") + "<br>Link: " + link +
+      "<br>Email: " + (email || "—") + "<br>Months: " + months + "</p>");
+
     // upload the logo attachment to the new row (non-fatal: a logo failure must not block checkout)
     if (logoParsed) {
       try {
@@ -139,7 +166,7 @@ exports.handler = async (event) => {
         price_data: {
           currency: CURRENCY,
           unit_amount: amount,
-          product_data: { name: "Seville T&M sponsorship — " + cat.d + " (" + cat.tier + ")", description: months + " month" + (months > 1 ? "s" : "") }
+          product_data: { name: BRAND + " sponsorship — " + cat.d + " (" + cat.tier + ")", description: months + " month" + (months > 1 ? "s" : "") }
         }
       }],
       metadata: { table: "mtm", record: rec.id, category: catValue, tier: cat.tier, months: String(months), portalToken: portalToken },
