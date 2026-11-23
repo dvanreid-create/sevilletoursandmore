@@ -784,11 +784,11 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
   function _fit(){ if(window.innerWidth>600){ box.style.minHeight=(window.innerHeight-box.offsetTop)+'px'; } else { box.style.minHeight=''; } }
   _fit(); window.addEventListener('resize',_fit); window.addEventListener('load',_fit);
   var ls=box.querySelectorAll('.fh-l'), dots=box.querySelectorAll('.fh-dot');
-  var cap=box.querySelector('.fh-cap');
+  var caps=box.querySelectorAll('.fh-cap');
   var pv=box.querySelector('.fh-prev'), nx=box.querySelector('.fh-next');
   if(ls.length<2){ if(pv)pv.style.display='none'; if(nx)nx.style.display='none'; var dd=box.querySelector('.fh-dots'); if(dd)dd.style.display='none'; return; }
   var i=0;
-  function paint(){ for(var k=0;k<ls.length;k++){ ls[k].classList.toggle('on',k===i); if(dots[k])dots[k].classList.toggle('on',k===i); } if(cap)cap.classList.toggle('show', cap.getAttribute('data-slide')===String(i)); }
+  function paint(){ for(var k=0;k<ls.length;k++){ ls[k].classList.toggle('on',k===i); if(dots[k])dots[k].classList.toggle('on',k===i); } for(var c=0;c<caps.length;c++){ caps[c].classList.toggle('show', caps[c].getAttribute('data-slide')===String(i)); } }
   function go(n){ i=(n+ls.length)%ls.length; paint(); }
   paint();
   // AUTO-SCROLL (Sofia, 2026-09-22): every 6s, advance to the next hero image.
