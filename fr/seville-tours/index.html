@@ -179,6 +179,12 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
   .fh-imgs{position:absolute;inset:0;z-index:0}
   .fh-l{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;opacity:0;transition:opacity .5s}
   .fh-l.on{opacity:1}
+  /* Food hero slide only: tour title + clickable Book pill (DLR 2026-11-22) */
+  .fh-cap{position:absolute;left:0;right:0;bottom:58px;z-index:3;display:none;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:0 18px;text-decoration:none}
+  .fh-cap b{color:#fff;font:700 clamp(19px,3.4vw,32px)/1.18 Inter,Arial,sans-serif;text-shadow:0 2px 16px rgba(0,0,0,.72);max-width:780px}
+  .fh-cap .fh-book{display:inline-block;background:#E8662A;color:#fff;font:700 15px/1 Inter,Arial,sans-serif;padding:14px 32px;border-radius:999px;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+  .fh-cap.show{display:flex}
+  @media(max-width:600px){.fh-cap{bottom:48px;gap:11px}.fh-cap .fh-book{padding:12px 26px}}
   .fh-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:46px;height:46px;border-radius:50%;background:rgba(20,58,78,.42);border:1px solid rgba(255,255,255,.6);color:#fff;font:400 26px/1 Georgia,serif;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
   .fh-nav:hover{background:rgba(20,58,78,.72)}
   .fh-prev{left:16px}.fh-next{right:16px}
@@ -762,6 +768,7 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
 
 <section class="fallhero" role="img" aria-label="Seville and Andalusia">
   <div class="fh-imgs"><span class="fh-l on" style="background-image:url(&#39;/assets/hero-1.jpg?v=db378bea&#39;);background-position:center 50%"></span><span class="fh-l" style="background-image:url(&#39;/assets/hero-2.jpg?v=9c704dd8&#39;);background-position:center 50%"></span><span class="fh-l" style="background-image:url(&#39;/assets/hero-3.jpg?v=f4884a70&#39;);background-position:center 50%"></span></div>
+  
   <button class="fh-nav fh-prev" type="button" aria-label="Previous image">&#8249;</button>
   <button class="fh-nav fh-next" type="button" aria-label="Next image">&#8250;</button>
   <div class="fh-dots"><button class="fh-dot on" type="button" aria-label="Image 1"></button><button class="fh-dot" type="button" aria-label="Image 2"></button><button class="fh-dot" type="button" aria-label="Image 3"></button></div>
@@ -777,10 +784,11 @@ if(document.readyState!=='loading')init();else document.addEventListener('DOMCon
   function _fit(){ if(window.innerWidth>600){ box.style.minHeight=(window.innerHeight-box.offsetTop)+'px'; } else { box.style.minHeight=''; } }
   _fit(); window.addEventListener('resize',_fit); window.addEventListener('load',_fit);
   var ls=box.querySelectorAll('.fh-l'), dots=box.querySelectorAll('.fh-dot');
+  var cap=box.querySelector('.fh-cap');
   var pv=box.querySelector('.fh-prev'), nx=box.querySelector('.fh-next');
   if(ls.length<2){ if(pv)pv.style.display='none'; if(nx)nx.style.display='none'; var dd=box.querySelector('.fh-dots'); if(dd)dd.style.display='none'; return; }
   var i=0;
-  function paint(){ for(var k=0;k<ls.length;k++){ ls[k].classList.toggle('on',k===i); if(dots[k])dots[k].classList.toggle('on',k===i); } }
+  function paint(){ for(var k=0;k<ls.length;k++){ ls[k].classList.toggle('on',k===i); if(dots[k])dots[k].classList.toggle('on',k===i); } if(cap)cap.classList.toggle('show', cap.getAttribute('data-slide')===String(i)); }
   function go(n){ i=(n+ls.length)%ls.length; paint(); }
   paint();
   // AUTO-SCROLL (Sofia, 2026-09-22): every 6s, advance to the next hero image.
