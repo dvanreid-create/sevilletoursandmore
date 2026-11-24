@@ -1093,7 +1093,7 @@ window.addEventListener('load',function(){
   var backTop=document.getElementById('backTop');
   if(backTop)backTop.addEventListener('click',function(ev){ev.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});
   var toEnd=document.getElementById('toEnd');
-  if(toEnd)toEnd.addEventListener('click',function(ev){ev.preventDefault();var _eh=function(){return Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,document.body.offsetHeight,document.documentElement.offsetHeight);};window.scrollTo({top:_eh(),behavior:'smooth'});setTimeout(function(){window.scrollTo({top:_eh(),behavior:'smooth'});},320);});
+  if(toEnd)toEnd.addEventListener('click',function(ev){ev.preventDefault();window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});});
   // Mobile filter behaviour (DLR 2026-08-25): starts OPEN (class in markup). It auto-collapses the
   // FIRST time the user scrolls down, to get out of the way. After that the user is in full control:
   // tapping the header expands/collapses it at ANY scroll position and it STAYS put — the auto-collapse
